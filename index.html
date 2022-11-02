@@ -1,0 +1,34 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat test</title>
+    <link rel="stylesheet" href="src/style.css">
+</head>
+
+<body>
+   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js"></script>
+    
+    <h1>Silver's Chat</h1>
+
+    <div id="chatHistory"></div>
+
+    <div class="inputBox">
+        <input type="text" name="name" id="nameField" placeholder="Name">
+    </div>
+
+    <div class="inputBox">
+        <textarea name="message" id="msgField" rows="4" cols="50" placeholder="Message"></textarea>
+    </div>
+    
+    <div class="inputBox">
+        <button onclick="writeData()">Send</button>
+    </div>
+    
+    <script src="src/main.js"></script>
+</body>
+
+</html>
