@@ -9,25 +9,27 @@
 </head>
 
 <body>
-    <div class="pageContainer">
+    <div class="page_container">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js"></script>
-        
-        <h1>Silver's Chat</h1>
+
+        <h1 class="title">Silver's Chat</h1>
 
         <div id="chatHistory"></div>
+        <div class="input">
+            <div class="inputBox">
+                <input type="text" name="name" id="nameField" placeholder="Name">
+            </div>
 
-        <div class="inputBox">
-            <input type="text" name="name" id="nameField" placeholder="Name">
+            <div class="inputBox">
+                <textarea name="message" id="msgField" rows="4" cols="50" placeholder="Message"></textarea>
+            </div>
+
+            <div class="inputBox">
+                <button onclick="writeData()">Send</button>
+            </div>
         </div>
 
-        <div class="inputBox">
-            <textarea name="message" id="msgField" rows="4" cols="50" placeholder="Message"></textarea>
-        </div>
-        
-        <div class="inputBox">
-            <button onclick="writeData()">Send</button>
-        </div>
-        
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
         <script src="src/DateConverter.js"></script>
         <script src="src/main.js"></script>
     </div>

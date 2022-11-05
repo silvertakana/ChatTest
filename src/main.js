@@ -15,7 +15,10 @@ var DB = firebase.database();
 var Users = DB.ref("Users");
 var maxIndex = 30
 var index;
-DB.ref("index").on('value', (snap)=>{
+var messages;
+
+let texted = false;
+DB.ref("index").once('value', (snap)=>{
     var data = snap.val();
     index = data;
 })
@@ -28,26 +31,52 @@ function writeData(e){
 
     DB.ref("index").set((index+1) % maxIndex); // increase index by 1 each time write
     getElemId("msgField").value = "" // clear message field
+    texted = true;
 }
 const getElemId = (id) =>{
     return document.getElementById(id);
 }
+let loadUp = true;
 Users.on('value', (snap)=>{
-    let data = snap.val();
+    messages = snap.val();
     getElemId("chatHistory").innerHTML = "";
     
-    for(let i = 0; i < maxIndex; i++){
-        message = data[(index+i+1) % maxIndex];
+    DB.ref("index").once('value', (snap)=>{
+        var data = snap.val();
+        index = data;
+
+        Notification.requestPermission().then(prem=>{
+            console.log(loadUp)
+            if(prem == "granted" && !loadUp && !texted){
+                let msg = messages[index-1]
+                let name = msg.name;
+                if(!name) name = "Anonymous";
+                var notif = new Notification("New Message from "+ name, {
+                    body: `${msg.message}`,
+                });
+            }
+            loadUp = false;
+            texted = false;
+        });
+    })
+
+    for(let i = 0; i <maxIndex; i++){
+        let ind = (index+i+1) % maxIndex;
+        let message = messages[ind];
         if(!message) continue;
+        let name = message.name;
+        if(!name) name = "Anonymous";
         getElemId("chatHistory").innerHTML += 
         `<div class="message">
             <div style='clear: both'>
-                <h3 id='name'> ${message.name} </h3>
+                <h3 id='name'> ${name} </h3>
                 <div id='time'>${DateConverter(new Date(message.date))}</div>
             </div>
-            <p style='clear: both'>${message.message}</p>
-            <hr/>
+            <div class="txt_message"><p style='clear: both' id="txt_message_${i}"></p></div>
         </div>
+        <hr/>
         `;
+        getElemId(`txt_message_${i}`).innerHTML = marked.parse(message.message);
     }
+    
 })
