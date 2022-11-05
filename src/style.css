@@ -45,6 +45,10 @@ textarea{
 
     padding:10px;
 }
+#wait_message{
+    display: inline;
+    color: red;
+}
 .message{
     margin: 10px 20px;
     padding: auto;

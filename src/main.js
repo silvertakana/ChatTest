@@ -22,16 +22,35 @@ DB.ref("index").once('value', (snap)=>{
     var data = snap.val();
     index = data;
 })
+var waited = true;
+var send_timer;
+var checktimerremaininginterval;
 function writeData(e){
-    DB.ref(`Users/${index}`).set({
-        name:getElemId("nameField").value,
-        date: new Date().toString(),
-        message: getElemId("msgField").value
-    });
+    if(waited){
+        DB.ref(`Users/${index}`).set({
+            name:getElemId("nameField").value,
+            date: new Date().toString(),
+            message: getElemId("msgField").value
+        });
+        
+        DB.ref("index").set((index+1) % maxIndex); // increase index by 1 each time write
+        getElemId("msgField").value = "" // clear message field
+        texted = true;
+        send_timer = new timer(resetTimer, 5000)
+    }else{
+        //getElemId("wait_message").innerHTML = `Please wait ${Math.floor(send_timer.getTimeLeft()/1000)} seconds before sending another message`;
 
-    DB.ref("index").set((index+1) % maxIndex); // increase index by 1 each time write
-    getElemId("msgField").value = "" // clear message field
-    texted = true;
+        if(!checktimerremaininginterval) checktimerremaininginterval=setInterval(()=>{
+            getElemId("wait_message").innerHTML = `Please wait ${Math.floor(send_timer.getTimeLeft()/1000)} seconds`;
+        }, 500);
+    }
+    waited = false;
+}
+function resetTimer(){
+    if(checktimerremaininginterval) clearInterval(checktimerremaininginterval);
+    checktimerremaininginterval = false;
+    getElemId("wait_message").innerHTML = "";
+    waited = true;
 }
 const getElemId = (id) =>{
     return document.getElementById(id);
@@ -46,7 +65,6 @@ Users.on('value', (snap)=>{
         index = data;
 
         Notification.requestPermission().then(prem=>{
-            console.log(loadUp)
             if(prem == "granted" && !loadUp && !texted){
                 let msg = messages[index-1]
                 let name = msg.name;
