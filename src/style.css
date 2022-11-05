@@ -17,4 +17,11 @@ body{
 }
 .message{
     margin: 10px 0;
+    padding: auto;
+}
+#name{
+    float: left;
+}
+#time{
+    padding-left: 100px;
 }

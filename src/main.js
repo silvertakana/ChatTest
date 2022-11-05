@@ -11,30 +11,43 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-var DB = firebase.database().ref("Users");
+var DB = firebase.database();
+var Users = DB.ref("Users");
+var maxIndex = 30
+var index;
+DB.ref("index").on('value', (snap)=>{
+    var data = snap.val();
+    index = data;
+})
 function writeData(e){
-    var User = DB.push();
-    User.set({
+    DB.ref(`Users/${index}`).set({
         name:getElemId("nameField").value,
+        date: new Date().toString(),
         message: getElemId("msgField").value
-    })
-    getElemId("msgField").value = ""
+    });
+
+    DB.ref("index").set((index+1) % maxIndex); // increase index by 1 each time write
+    getElemId("msgField").value = "" // clear message field
 }
 const getElemId = (id) =>{
     return document.getElementById(id);
 }
-function updateMessage(){
-    DB.on('value', (snap)=>{
-        let data = snap.val();
-        getElemId("chatHistory").innerHTML = "";
-        
-        for(let id in data){
-            getElemId("chatHistory").innerHTML += 
-            "<div class=\"message\">" +
-                "<h3>"+data[id].name+"</h3>"+
-                "<p>"+data[id].message+"</p>"+
-            "</div>"
-        }
-    })
-}
-setInterval(updateMessage, 200)
+Users.on('value', (snap)=>{
+    let data = snap.val();
+    getElemId("chatHistory").innerHTML = "";
+    
+    for(let i = 0; i < maxIndex; i++){
+        message = data[(index+i+1) % maxIndex];
+        if(!message) continue;
+        getElemId("chatHistory").innerHTML += 
+        `<div class="message">
+            <div style='clear: both'>
+                <h3 id='name'> ${message.name} </h3>
+                <div id='time'>${DateConverter(new Date(message.date))}</div>
+            </div>
+            <p style='clear: both'>${message.message}</p>
+            <hr/>
+        </div>
+        `;
+    }
+})
