@@ -63,8 +63,6 @@ Users.on('value', (snap)=>{
     messages = snap.val();
     getElemId("chatHistory").innerHTML = "";
     
-    
-
     DB.ref("index").once('value', (snap)=>{
         var data = snap.val();
         index = data;
@@ -84,28 +82,28 @@ Users.on('value', (snap)=>{
         notification.onclick = function(e) {
             window.location.href = "https://silvertakana.github.io/ChatTest/";
         }
-    })
 
-    for(let i = 0; i <maxIndex; i++){
-        let ind = (index+i) % maxIndex;
-        let message = messages[ind];
-        if(!message) continue;
-        let name = message.name;
-        if(!name) name = "Anonymous";
-        getElemId("chatHistory").innerHTML += 
-        `<div class="message">
-            <div style='clear: both'>
-                <h3 id='name'> ${name} </h3>
-                <div id='time'>${DateConverter(new Date(message.date))}</div>
+        for(let i = 0; i <maxIndex; i++){
+            let ind = (index+i) % maxIndex;
+            let message = messages[ind];
+            if(!message) continue;
+            let name = message.name;
+            if(!name) name = "Anonymous";
+            getElemId("chatHistory").innerHTML += 
+            `<div class="message">
+                <div style='clear: both'>
+                    <h3 id='name'> ${name} </h3>
+                    <div id='time'>${DateConverter(new Date(message.date))}</div>
+                </div>
+                <div class="txt_message"><p style='clear: both' id="txt_message_${i}"></p></div>
             </div>
-            <div class="txt_message"><p style='clear: both' id="txt_message_${i}"></p></div>
-        </div>
-        <hr/>
-        `;
-        getElemId(`txt_message_${i}`).innerHTML = marked.parse(message.message);
-    }
-    
-    // Update scrolling
-    var element = document.getElementById("chatHistory");
-    element.scrollTop = element.scrollHeight;
+            <hr/>
+            `;
+            getElemId(`txt_message_${i}`).innerHTML = marked.parse(message.message);
+        }
+        
+        // Update scrolling
+        var element = document.getElementById("chatHistory");
+        element.scrollTop = element.scrollHeight;
+    })
 })
