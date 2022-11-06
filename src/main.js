@@ -55,17 +55,22 @@ function resetTimer(){
 const getElemId = (id) =>{
     return document.getElementById(id);
 }
+
+
+
 let loadUp = true;
 Users.on('value', (snap)=>{
     messages = snap.val();
     getElemId("chatHistory").innerHTML = "";
     
+    
+
     DB.ref("index").once('value', (snap)=>{
         var data = snap.val();
         index = data;
 
-        Notification.requestPermission().then(prem=>{
-            if(prem == "granted" && !loadUp && !texted){
+        let notification = Notification.requestPermission().then(prem=>{
+            if(prem == "granted" && !loadUp && !texted && document.visibilityState == "hidden"){
                 let msg = messages[index-1]
                 let name = msg.name;
                 if(!name) name = "Anonymous";
@@ -76,10 +81,13 @@ Users.on('value', (snap)=>{
             loadUp = false;
             texted = false;
         });
+        notification.onclick = function(e) {
+            window.location.href = "https://silvertakana.github.io/ChatTest/";
+        }
     })
 
     for(let i = 0; i <maxIndex; i++){
-        let ind = (index+i+1) % maxIndex;
+        let ind = (index+i) % maxIndex;
         let message = messages[ind];
         if(!message) continue;
         let name = message.name;
@@ -97,4 +105,7 @@ Users.on('value', (snap)=>{
         getElemId(`txt_message_${i}`).innerHTML = marked.parse(message.message);
     }
     
+    // Update scrolling
+    var element = document.getElementById("chatHistory");
+    element.scrollTop = element.scrollHeight;
 })
